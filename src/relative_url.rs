@@ -1,0 +1,53 @@
+pub enum RelativeUrl {
+    DataLoggerDeviceList,
+    DeviceInfo,
+    DevicesByPlantList,
+    PlantFaultLog,
+    InverterEnergyDataDayChart,
+    InverterEnergyDataDay,
+    InverterEnergyDataMonthChart,
+    InverterEnergyDataMonth,
+    InverterEnergyDataTotalChart,
+    InverterEnergyDataTotal,
+    InverterEnergyDataYearChart,
+    InverterEnergyDataYear,
+    InverterTotals,
+    Login,
+    PlantData,
+    PlantList,
+    StorageBatChartData,
+    StorageEnergyDayChartData,
+    StorageStatusData,
+    StorageTotalData,
+    TcpSet,
+    WeatherByPlantId,
+}
+
+impl RelativeUrl {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            RelativeUrl::DataLoggerDeviceList => "device/getDatalogList",
+            RelativeUrl::DeviceInfo => "panel/getDeviceInfo",
+            RelativeUrl::DevicesByPlantList => "panel/getDevicesByPlantList",
+            RelativeUrl::PlantFaultLog => "log/getNewPlantFaultLog",
+            RelativeUrl::InverterEnergyDataDayChart => "energy/compare/getDevicesDayChart",
+            RelativeUrl::InverterEnergyDataDay => "panel/inv/getInvDayChart",
+            RelativeUrl::InverterEnergyDataMonthChart => "energy/compare/getDevicesMonthChart",
+            RelativeUrl::InverterEnergyDataMonth => "panel/inv/getInvMonthChart",
+            RelativeUrl::InverterEnergyDataTotalChart => "energy/compare/getDevicesTotalChart",
+            RelativeUrl::InverterEnergyDataTotal => "panel/inv/getInvTotalChart",
+            RelativeUrl::InverterEnergyDataYearChart => "energy/compare/getDevicesYearChart",
+            RelativeUrl::InverterEnergyDataYear => "panel/inv/getInvYearChart",
+            RelativeUrl::InverterTotals => "panel/inv/getInvTotalData",
+            RelativeUrl::Login => "login",
+            RelativeUrl::PlantData => "panel/getPlantData",
+            RelativeUrl::PlantList => "index/getPlantListTitle",
+            RelativeUrl::StorageBatChartData => "panel/storage/getStorageBatChart",
+            RelativeUrl::StorageEnergyDayChartData => "panel/storage/getStorageEnergyDayChart",
+            RelativeUrl::StorageStatusData => "panel/storage/getStorageStatusData",
+            RelativeUrl::StorageTotalData => "panel/storage/getStorageTotalData",
+            RelativeUrl::TcpSet => "tcpSet.do",
+            RelativeUrl::WeatherByPlantId => "index/getWeatherByPlantId",
+        }
+    }
+}
