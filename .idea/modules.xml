@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/GrowattAPIRust.iml" filepath="$PROJECT_DIR$/.idea/GrowattAPIRust.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/growatt_api.iml" filepath="$PROJECT_DIR$/.idea/growatt_api.iml" />
     </modules>
   </component>
 </project>
