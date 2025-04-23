@@ -90,13 +90,13 @@ struct WeatherResponse {
 }
 
 impl Weather {
-    pub async fn by_plant(session: &mut Session, plant_id: String) -> Result<Weather, StatusCode> {
+    pub async fn by_plant(session: &mut Session, plant_id: &str) -> Result<Weather, StatusCode> {
         let mut url = session
             .api_base_url
             .join(RelativeUrl::WeatherByPlantId.as_str())
             .map_err(|_| StatusCode::BAD_REQUEST)?;
 
-        url.query_pairs_mut().append_pair("plantId", &plant_id);
+        url.query_pairs_mut().append_pair("plantId", plant_id);
 
         let response = session
             .post_message_return_response::<WeatherResponse>(url, None)

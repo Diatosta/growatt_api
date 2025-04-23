@@ -29,8 +29,16 @@ mod tests {
 
         let first_plant = plants.first().unwrap().clone();
 
-        let weather = Weather::by_plant(&mut session, first_plant.id).await;
+        let weather = Weather::by_plant(&mut session, &first_plant.id)
+            .await
+            .unwrap();
 
         println!("{:#?}", weather);
+
+        let devices = models::device::Device::by_plant(&mut session, &first_plant.id, "1")
+            .await
+            .unwrap();
+
+        println!("{:#?}", devices);
     }
 }
