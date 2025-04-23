@@ -6,12 +6,13 @@ mod session;
 mod tests {
     use super::*;
     use crate::models::plant::Plant;
-    use crate::relative_url::RelativeUrl;
-    use reqwest::StatusCode;
+
+    static USERNAME: &str = "USERNAME";
+    static PASSWORD: &str = "PASSWORD";
 
     #[tokio::test]
     async fn authenticate_successful() {
-        let result = session::Session::new("username".to_string(), "password".to_string())
+        let result = session::Session::new(USERNAME.to_string(), PASSWORD.to_string())
             .authenticate()
             .await;
         assert_eq!(result.is_ok(), true);
@@ -19,20 +20,9 @@ mod tests {
 
     #[tokio::test]
     async fn test() {
-        let mut session = session::Session::new("username".to_string(), "password".to_string());
+        let mut session = session::Session::new(USERNAME.to_string(), PASSWORD.to_string());
 
-        session.authenticate().await.unwrap();
-
-        let url = session
-            .api_base_url
-            .join(RelativeUrl::PlantList.as_str())
-            .unwrap();
-
-        let result: Result<Vec<Plant>, StatusCode> = session
-            .get_message_return_response(url, StatusCode::OK)
-            .await;
-
-        println!("{:?}", result);
+        let result = Plant::all(&mut session).await;
 
         assert_eq!(result.is_ok(), true);
     }
