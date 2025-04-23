@@ -46,7 +46,11 @@ impl Session {
         self.handle_response(response).await
     }
 
-    async fn build_post<T>(&self, url: Url, form: HashMap<&str, &str>) -> Result<T, StatusCode>
+    async fn build_post<T>(
+        &self,
+        url: Url,
+        form: Option<HashMap<&str, &str>>,
+    ) -> Result<T, StatusCode>
     where
         T: DeserializeOwned,
     {
@@ -104,7 +108,7 @@ impl Session {
             }
         };
 
-        let response: Result<LoginResponse, StatusCode> = self.build_post(url, params).await;
+        let response: Result<LoginResponse, StatusCode> = self.build_post(url, Some(params)).await;
 
         match response {
             Ok(t) => {
@@ -123,14 +127,9 @@ impl Session {
         }
     }
 
-    pub async fn get_message_return_response<T>(
-        &mut self,
-        url: Url,
-        expected_status_code: StatusCode,
-    ) -> Result<T, StatusCode>
-    where
-        T: DeserializeOwned,
-    {
+    // This function checks if the session is authenticated and if any cookies are expired.
+    // If not, it calls the authenticate function to re-authenticate.
+    pub async fn try_authenticate(&mut self) -> Result<(), StatusCode> {
         // Get if any cookies are expired
         let non_expired_cookie_count = {
             let cookies = self.cookie_container.lock().unwrap();
@@ -141,6 +140,28 @@ impl Session {
             self.authenticate().await?;
         }
 
+        Ok(())
+    }
+
+    pub async fn get_message_return_response<T>(&mut self, url: Url) -> Result<T, StatusCode>
+    where
+        T: DeserializeOwned,
+    {
+        self.try_authenticate().await?;
+
         self.build_get(url).await
+    }
+
+    pub async fn post_message_return_response<T>(
+        &mut self,
+        url: Url,
+        form: Option<HashMap<&str, &str>>,
+    ) -> Result<T, StatusCode>
+    where
+        T: DeserializeOwned,
+    {
+        self.try_authenticate().await?;
+
+        self.build_post(url, form).await
     }
 }

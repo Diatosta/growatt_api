@@ -19,8 +19,6 @@ impl Plant {
             .join(RelativeUrl::PlantList.as_str())
             .map_err(|_| StatusCode::BAD_REQUEST)?;
 
-        session
-            .get_message_return_response(url, StatusCode::OK)
-            .await
+        session.get_message_return_response(url).await
     }
 }

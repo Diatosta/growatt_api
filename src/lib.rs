@@ -6,6 +6,7 @@ mod session;
 mod tests {
     use super::*;
     use crate::models::plant::Plant;
+    use crate::models::weather::Weather;
 
     static USERNAME: &str = "USERNAME";
     static PASSWORD: &str = "PASSWORD";
@@ -22,8 +23,14 @@ mod tests {
     async fn test() {
         let mut session = session::Session::new(USERNAME.to_string(), PASSWORD.to_string());
 
-        let result = Plant::all(&mut session).await;
+        let plants = Plant::all(&mut session).await.unwrap();
 
-        assert_eq!(result.is_ok(), true);
+        println!("{:#?}", plants);
+
+        let first_plant = plants.first().unwrap().clone();
+
+        let weather = Weather::by_plant(&mut session, first_plant.id).await;
+
+        println!("{:#?}", weather);
     }
 }
