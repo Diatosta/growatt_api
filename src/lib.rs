@@ -62,12 +62,39 @@ mod tests {
             &first_plant.id,
             chrono::Utc::now(),
             Some(&first_device.serial_number),
-            Some(Voltage::VAC1.as_str()),
+            Some(Voltage::Vac1.as_str()),
             Some(&first_device.device_type_name),
         )
         .await
         .unwrap();
 
         println!("{:#?}", all_plant_voltage_data_for_given_day);
+
+        let all_plant_power_data_for_given_month = Plant::detail_month_data_chart(
+            &mut session,
+            &first_plant.id,
+            chrono::Utc::now(),
+            Some(&first_device.serial_number),
+            None,
+            None,
+            Some(&first_device.device_type_name),
+        )
+        .await
+        .unwrap();
+
+        println!("{:#?}", all_plant_power_data_for_given_month);
+
+        let all_plant_data_for_given_year = Plant::detail_year_data_chart(
+            &mut session,
+            &first_plant.id,
+            chrono::Utc::now(),
+            None,
+            None,
+            None,
+        )
+        .await
+        .unwrap();
+
+        println!("{:#?}", all_plant_data_for_given_year);
     }
 }
