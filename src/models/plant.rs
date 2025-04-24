@@ -204,4 +204,58 @@ impl Plant {
             Err(_) => Err(StatusCode::BAD_REQUEST),
         }
     }
+
+    pub async fn detail_total_data_chart(
+        session: &mut Session,
+        plant_id: &str,
+        serial_number: Option<&str>,
+        param: Option<&str>,
+        device_type: Option<&str>,
+    ) -> Result<DeviceDataChart, StatusCode> {
+        let url = session
+            .api_base_url
+            .join(RelativeUrl::InverterEnergyDataTotalChart.as_str())
+            .map_err(|_| StatusCode::BAD_REQUEST)?;
+
+        let json_data_type = match device_type {
+            Some(_) => device_type.unwrap_or(""),
+            None => match serial_number {
+                None => "plant",
+                Some(_) => "inv",
+            },
+        };
+        let sn = if device_type.is_none() && serial_number.is_some() {
+            serial_number.unwrap().to_string()
+        } else {
+            plant_id.to_string()
+        };
+        let param = param.unwrap_or(Power::Energy.as_str());
+        let year = Utc::now().format("%Y").to_string();
+        let json_data = format!(
+            "[{{\"type\":\"{}\",\"sn\":\"{}\",\"params\":\"{}\"}}]",
+            json_data_type, sn, param
+        );
+
+        let mut params: HashMap<&str, &str> = HashMap::new();
+        params.insert("plantId", plant_id);
+        params.insert("year", &year);
+        params.insert("jsonData", json_data.as_str());
+
+        let response = session
+            .post_message_return_response::<DeviceDataChartResponseRoot>(url, Some(params))
+            .await;
+
+        match response {
+            Ok(res) => {
+                if res.result == 1 {
+                    let data = res.obj.first().unwrap().datas.clone();
+
+                    Ok(data)
+                } else {
+                    Err(StatusCode::BAD_REQUEST)
+                }
+            }
+            Err(_) => Err(StatusCode::BAD_REQUEST),
+        }
+    }
 }

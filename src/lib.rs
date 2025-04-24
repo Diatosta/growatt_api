@@ -96,5 +96,12 @@ mod tests {
         .unwrap();
 
         println!("{:#?}", all_plant_data_for_given_year);
+
+        let all_plant_power_data_per_year =
+            Plant::detail_total_data_chart(&mut session, &first_plant.id, None, None, None)
+                .await
+                .unwrap();
+
+        println!("{:#?}", all_plant_power_data_per_year);
     }
 }
