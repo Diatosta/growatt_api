@@ -5,6 +5,7 @@ mod session;
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::models::inverter_plant_parameters::Voltage;
     use crate::models::plant::Plant;
     use crate::models::weather::Weather;
 
@@ -40,5 +41,33 @@ mod tests {
             .unwrap();
 
         println!("{:#?}", devices);
+
+        let first_device = devices.datas.first().unwrap().clone();
+
+        let all_plant_data_for_given_day = Plant::detail_day_data_chart(
+            &mut session,
+            &first_plant.id,
+            chrono::Utc::now(),
+            None,
+            None,
+            None,
+        )
+        .await
+        .unwrap();
+
+        println!("{:#?}", all_plant_data_for_given_day);
+
+        let all_plant_voltage_data_for_given_day = Plant::detail_day_data_chart(
+            &mut session,
+            &first_plant.id,
+            chrono::Utc::now(),
+            Some(&first_device.serial_number),
+            Some(Voltage::VAC1.as_str()),
+            Some(&first_device.device_type_name),
+        )
+        .await
+        .unwrap();
+
+        println!("{:#?}", all_plant_voltage_data_for_given_day);
     }
 }

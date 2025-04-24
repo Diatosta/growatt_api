@@ -1,7 +1,33 @@
+use crate::models::inverter_plant_parameters::Power;
 use crate::relative_url::RelativeUrl;
 use crate::session::Session;
+use chrono::{DateTime, Utc};
 use reqwest::StatusCode;
 use serde::Deserialize;
+use std::collections::HashMap;
+
+#[derive(Clone, Debug, Deserialize)]
+struct DeviceDayDataChartResponseRoot {
+    pub result: i32,
+    pub obj: Vec<DeviceDayDataChartResponse>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct DeviceDayDataChartResponse {
+    pub datas: DeviceDayDataChart,
+    #[serde(alias = "sn")]
+    pub serial_number: String,
+    #[serde(alias = "type")]
+    pub data_type: String,
+    pub params: String,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct DeviceDayDataChart {
+    pub pac: Option<Vec<Option<f32>>>,
+    #[serde(alias = "VAC1")]
+    pub vac1: Option<Vec<Option<f32>>>,
+}
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct Plant {
@@ -20,5 +46,59 @@ impl Plant {
             .map_err(|_| StatusCode::BAD_REQUEST)?;
 
         session.get_message_return_response(url).await
+    }
+
+    pub async fn detail_day_data_chart(
+        session: &mut Session,
+        plant_id: &str,
+        date: DateTime<Utc>,
+        serial_number: Option<&str>,
+        param: Option<&str>,
+        device_type_name: Option<&str>,
+    ) -> Result<DeviceDayDataChart, StatusCode> {
+        let url = session
+            .api_base_url
+            .join(RelativeUrl::InverterEnergyDataDayChart.as_str())
+            .map_err(|_| StatusCode::BAD_REQUEST)?;
+
+        let device_type_name = device_type_name.unwrap_or("");
+
+        let json_data_type = match serial_number {
+            Some(_) => device_type_name,
+            None => "plant",
+        };
+
+        let sn = serial_number.unwrap_or(plant_id);
+
+        let param = param.unwrap_or(Power::PAC.as_str());
+
+        let date = &date.format("%Y-%m-%d").to_string();
+
+        let json_data = format!(
+            "[{{\"type\":\"{}\",\"sn\":\"{}\",\"params\":\"{}\"}}]",
+            json_data_type, sn, param
+        );
+
+        let mut params: HashMap<&str, &str> = HashMap::new();
+        params.insert("plantId", plant_id);
+        params.insert("date", date);
+        params.insert("jsonData", json_data.as_str());
+
+        let response = session
+            .post_message_return_response::<DeviceDayDataChartResponseRoot>(url, Some(params))
+            .await;
+
+        match response {
+            Ok(res) => {
+                if res.result == 1 {
+                    let data = res.obj.first().unwrap().datas.clone();
+
+                    Ok(data)
+                } else {
+                    Err(StatusCode::BAD_REQUEST)
+                }
+            }
+            Err(_) => Err(StatusCode::BAD_REQUEST),
+        }
     }
 }
