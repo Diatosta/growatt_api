@@ -1,3 +1,4 @@
+use crate::models;
 use crate::models::inverter_plant_parameters::Power;
 use crate::relative_url::RelativeUrl;
 use crate::session::Session;
@@ -24,10 +25,22 @@ pub struct DeviceDataChartResponse {
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct DeviceDataChart {
-    pub pac: Option<Vec<Option<f32>>>,
-    #[serde(alias = "VAC1")]
-    pub vac1: Option<Vec<Option<f32>>>,
-    pub energy: Option<Vec<Option<f32>>>,
+    #[serde(
+        deserialize_with = "models::utils::deserialize_option_vec_f32",
+        default
+    )]
+    pub pac: Option<Vec<f32>>,
+    #[serde(
+        alias = "VAC1",
+        deserialize_with = "models::utils::deserialize_option_vec_f32",
+        default
+    )]
+    pub vac1: Option<Vec<f32>>,
+    #[serde(
+        deserialize_with = "models::utils::deserialize_option_vec_f32",
+        default
+    )]
+    pub energy: Option<Vec<f32>>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
