@@ -50,11 +50,12 @@ impl Session {
         &self,
         url: Url,
         form: Option<HashMap<&str, &str>>,
+        query: Option<HashMap<&str, &str>>,
     ) -> Result<T, StatusCode>
     where
         T: DeserializeOwned,
     {
-        let response = self.client.post(url).form(&form).send().await;
+        let response = self.client.post(url).query(&query).form(&form).send().await;
 
         self.handle_response(response).await
     }
@@ -108,7 +109,8 @@ impl Session {
             }
         };
 
-        let response: Result<LoginResponse, StatusCode> = self.build_post(url, Some(params)).await;
+        let response: Result<LoginResponse, StatusCode> =
+            self.build_post(url, Some(params), None).await;
 
         match response {
             Ok(t) => {
@@ -136,7 +138,7 @@ impl Session {
             cookies.iter_unexpired().count()
         };
 
-        if !self.is_authenticated || non_expired_cookie_count <= 0 {
+        if !self.is_authenticated || non_expired_cookie_count == 0 {
             self.authenticate().await?;
         }
 
@@ -156,12 +158,13 @@ impl Session {
         &mut self,
         url: Url,
         form: Option<HashMap<&str, &str>>,
+        query: Option<HashMap<&str, &str>>,
     ) -> Result<T, StatusCode>
     where
         T: DeserializeOwned,
     {
         self.try_authenticate().await?;
 
-        self.build_post(url, form).await
+        self.build_post(url, form, query).await
     }
 }

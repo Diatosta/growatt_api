@@ -93,7 +93,7 @@ impl Plant {
         params.insert("jsonData", json_data.as_str());
 
         let response = session
-            .post_message_return_response::<DeviceDataChartResponseRoot>(url, Some(params))
+            .post_message_return_response::<DeviceDataChartResponseRoot>(url, Some(params), None)
             .await;
 
         match response {
@@ -146,7 +146,7 @@ impl Plant {
         params.insert("jsonData", json_data.as_str());
 
         let response = session
-            .post_message_return_response::<DeviceDataChartResponseRoot>(url, Some(params))
+            .post_message_return_response::<DeviceDataChartResponseRoot>(url, Some(params), None)
             .await;
 
         match response {
@@ -201,7 +201,7 @@ impl Plant {
         params.insert("jsonData", json_data.as_str());
 
         let response = session
-            .post_message_return_response::<DeviceDataChartResponseRoot>(url, Some(params))
+            .post_message_return_response::<DeviceDataChartResponseRoot>(url, Some(params), None)
             .await;
 
         match response {
@@ -255,7 +255,7 @@ impl Plant {
         params.insert("jsonData", json_data.as_str());
 
         let response = session
-            .post_message_return_response::<DeviceDataChartResponseRoot>(url, Some(params))
+            .post_message_return_response::<DeviceDataChartResponseRoot>(url, Some(params), None)
             .await;
 
         match response {

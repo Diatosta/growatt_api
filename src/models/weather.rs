@@ -99,7 +99,7 @@ impl Weather {
         url.query_pairs_mut().append_pair("plantId", plant_id);
 
         let response = session
-            .post_message_return_response::<WeatherResponse>(url, None)
+            .post_message_return_response::<WeatherResponse>(url, None, None)
             .await;
 
         match response {

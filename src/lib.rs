@@ -5,9 +5,12 @@ mod session;
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::models::device::Device;
     use crate::models::inverter_plant_parameters::Voltage;
     use crate::models::plant::Plant;
+    use crate::models::tlx::Tlx;
     use crate::models::weather::Weather;
+    use crate::models::{signal_helper, status_helper};
     use chrono::{Datelike, Duration, Timelike, Utc};
 
     static USERNAME: &str = "USERNAME";
@@ -18,7 +21,7 @@ mod tests {
         let result = session::Session::new(USERNAME.to_string(), PASSWORD.to_string())
             .authenticate()
             .await;
-        assert_eq!(result.is_ok(), true);
+        assert!(result.is_ok());
     }
 
     #[tokio::test]
@@ -109,7 +112,7 @@ mod tests {
         println!("---------------------");
         println!();
 
-        let devices = models::device::Device::by_plant(&mut session, &first_plant.id, "1")
+        let devices = Device::by_plant(&mut session, &first_plant.id, "1")
             .await
             .unwrap();
 
@@ -181,72 +184,143 @@ mod tests {
 
         // Today at HH:mm (20 minutes ago)
         println!(
-            "{:<40}{}",
+            "{:<40}{} W",
             format!(
                 "- Today at {}:",
                 (now - Duration::minutes(-20)).format("%H:%M")
             ),
-            format!(
-                "{:#?} W",
-                all_plant_data_for_given_day
-                    .pac
-                    .and_then(|data| data.get(index_20_minutes_ago).copied())
-                    .unwrap_or(0.0)
-            )
+            all_plant_data_for_given_day
+                .pac
+                .and_then(|data| data.get(index_20_minutes_ago).copied())
+                .unwrap_or(0.0)
         );
 
         println!(
-            "{:<40}{}",
+            "{:<40}{} V",
             format!(
                 "- Today at {}:",
                 (now - Duration::minutes(-20)).format("%H:%M")
             ),
-            format!(
-                "{:#?} V",
-                all_plant_voltage_data_for_given_day
-                    .vac1
-                    .and_then(|data| data.get(index_20_minutes_ago).copied())
-                    .unwrap_or(0.0)
-            )
+            all_plant_voltage_data_for_given_day
+                .vac1
+                .and_then(|data| data.get(index_20_minutes_ago).copied())
+                .unwrap_or(0.0)
         );
 
         println!(
-            "{:<40}{}",
+            "{:<40}{} kWh",
             format!("- {}:", now.format("%Y-%m-01")),
-            format!(
-                "{:#?} kWh",
-                all_plant_power_data_for_given_month
-                    .energy
-                    .and_then(|data| data.first().copied())
-                    .unwrap_or(0.0)
-            )
+            all_plant_power_data_for_given_month
+                .energy
+                .and_then(|data| data.first().copied())
+                .unwrap_or(0.0)
         );
 
         println!(
-            "{:<40}{}",
+            "{:<40}{} kWh",
             format!("- {}:", now.format("%Y-%m")),
-            format!(
-                "{:#?} kWh",
-                all_plant_data_for_given_year
-                    .energy
-                    .and_then(|data| data.get((now.month() - 1) as usize).copied())
-                    .unwrap_or(0.0)
-            )
+            all_plant_data_for_given_year
+                .energy
+                .and_then(|data| data.get((now.month() - 1) as usize).copied())
+                .unwrap_or(0.0)
         );
 
         println!(
-            "{:<40}{}",
+            "{:<40}{} kWh",
             format!("- {}:", now.format("%Y")),
-            format!(
-                "{:#?} kWh",
-                all_plant_power_data_per_year
-                    .energy
-                    .and_then(|data| data.last().copied())
-                    .unwrap_or(0.0)
-            )
+            all_plant_power_data_per_year
+                .energy
+                .and_then(|data| data.last().copied())
+                .unwrap_or(0.0)
         );
 
         println!("----------------------------------------");
+        println!();
+
+        let data_logger_device = Device::data_logger_device_info(
+            &mut session,
+            &first_plant.id,
+            &first_device.data_logger_serial_number,
+        )
+        .await
+        .unwrap();
+
+        let data_logger_devices = Device::data_logger_devices(&mut session, &first_plant.id, "1")
+            .await
+            .unwrap();
+
+        let first_data_logger_device = data_logger_devices.datas.first().unwrap().clone();
+
+        let tlx_total_data =
+            Tlx::total_data(&mut session, &first_plant.id, &first_device.serial_number)
+                .await
+                .unwrap();
+
+        let device_status = status_helper::get_device_type_status(&first_device);
+
+        println!("----- My Photovoltaic Devices -------");
+
+        println!(
+            "{:<40}{}",
+            "- Device Serial Number:", first_device.serial_number
+        );
+        println!("{:<40}{}", "- Device User Name:", first_device.account_name);
+        println!(
+            "{:<40}{}",
+            "- Device Today (kWh):", first_device.energy_today
+        );
+        println!(
+            "{:<40}{}",
+            format!("- Today ({}):", tlx_total_data.unit),
+            tlx_total_data.photovoltaic_revenue_today
+        );
+        println!("{:<40}{}", "- Status:", device_status);
+        println!("{:<40}{}", "- Plant Name:", first_device.plant_name);
+        println!("{:<40}{}", "- This Month (kWh):", first_device.energy_month);
+        println!(
+            "{:<40}{}",
+            "- Server Update Time:", first_device.time_server
+        );
+        println!(
+            "{:<40}{}",
+            "- Data Logger:", first_device.data_logger_serial_number
+        );
+        println!(
+            "{:<40}{}",
+            "----- Signal:",
+            signal_helper::get_sim_signal_text(
+                first_data_logger_device.sim_signal,
+                &first_data_logger_device.device_type_indicate
+            )
+        );
+        println!(
+            "{:<40}{}",
+            "----- Collector Model:", first_device.data_logger_type_test
+        );
+        println!(
+            "{:<40}{}",
+            "----- Firmware Version:", data_logger_device.firmware_version
+        );
+        println!(
+            "{:<40}{}",
+            "----- Ip & Port:", data_logger_device.ip_and_port
+        );
+        println!(
+            "{:<40}{} Minute",
+            "----- Data Update Interval:", data_logger_device.interval
+        );
+        println!(
+            "{:<40}{}",
+            "----- Wireless type:", first_data_logger_device.wireless_type
+        );
+        println!(
+            "{:<40}{}",
+            "- Total Energy (kWh):", first_device.energy_total
+        );
+        println!("{:<40}{}", "- Rated Power (W):", first_device.nominal_power);
+        println!("{:<40}{}", "- Current Power (W):", first_device.pac);
+
+        println!("-------------------");
         println!();
     }
 }

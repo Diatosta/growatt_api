@@ -2,5 +2,8 @@ pub mod device;
 pub mod inverter_plant_parameters;
 pub mod login_response;
 pub mod plant;
+pub mod signal_helper;
+pub mod status_helper;
+pub mod tlx;
 pub mod utils;
 pub mod weather;
