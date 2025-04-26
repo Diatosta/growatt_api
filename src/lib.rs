@@ -1,7 +1,7 @@
-mod helpers;
-mod models;
-mod relative_url;
-mod session;
+pub mod helpers;
+pub mod models;
+pub mod relative_url;
+pub mod session;
 
 #[cfg(test)]
 mod tests {
