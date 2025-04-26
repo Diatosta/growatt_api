@@ -301,11 +301,57 @@ mod tests {
         println!("-------------------");
         println!();
 
-        /*if !devices.datas.is_empty()
+        if !devices.datas.is_empty()
             && !first_device.serial_number.is_empty()
             && user_has_storage_device
         {
-            let total_storage_data =
-        }*/
+            println!("----- Solar -------");
+            println!(
+                "{:<40}{} kWh",
+                "- Today: ", tlx_total_data.energy_photovoltaic_today
+            );
+            println!(
+                "{:<40}{} kWh",
+                "- Total: ", tlx_total_data.energy_photovoltaic_total
+            );
+            println!("-------------------");
+            println!();
+
+            println!("----- Discharged -------");
+            println!(
+                "{:<40}{} kWh",
+                "- Today: ", tlx_total_data.energy_discharge_today
+            );
+            println!(
+                "{:<40}{} kWh",
+                "- Total: ", tlx_total_data.energy_discharge_total
+            );
+            println!("-------------------");
+            println!();
+
+            println!("----- Imported from Grid -------");
+            println!(
+                "{:<40}{} kWh",
+                "- Today: ", tlx_total_data.energy_from_grid_today
+            );
+            println!(
+                "{:<40}{} kWh",
+                "- Total: ", tlx_total_data.energy_from_grid_total
+            );
+            println!("-------------------");
+            println!();
+
+            println!("----- Load Consumption -------");
+            println!(
+                "{:<40}{} kWh",
+                "- Today: ", tlx_total_data.energy_load_consumption_today
+            );
+            println!(
+                "{:<40}{} kWh",
+                "- Total: ", tlx_total_data.energy_load_consumption_total
+            );
+            println!("-------------------");
+            println!();
+        }
     }
 }

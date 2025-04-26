@@ -21,13 +21,13 @@ pub struct TlxTotalData {
     #[serde(alias = "edischargeTotal")]
     pub energy_discharge_total: String,
     #[serde(alias = "elocalLoadToday")]
-    pub energy_local_load_today: String,
+    pub energy_load_consumption_today: String,
     #[serde(alias = "elocalLoadTotal")]
-    pub energy_local_load_total: String,
+    pub energy_load_consumption_total: String,
     #[serde(alias = "epvToday")]
-    pub energy_pv_today: String,
+    pub energy_photovoltaic_today: String,
     #[serde(alias = "epvTotal")]
-    pub energy_pv_total: String,
+    pub energy_photovoltaic_total: String,
     #[serde(alias = "eselfToday")]
     pub energy_self_today: String,
     #[serde(alias = "eselfTotal")]
@@ -37,9 +37,9 @@ pub struct TlxTotalData {
     #[serde(alias = "etogridTotal")]
     pub energy_to_grid_total: String,
     #[serde(alias = "gridPowerToday")]
-    pub grid_power_today: String,
+    pub energy_from_grid_today: String,
     #[serde(alias = "gridPowerTotal")]
-    pub grid_power_total: String,
+    pub energy_from_grid_total: String,
     #[serde(alias = "isParallel")]
     pub is_parallel: String,
     #[serde(alias = "outEnergyToday")]
