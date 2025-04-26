@@ -11,6 +11,14 @@ where
     Ok(opt_vec.map(|vec| vec.into_iter().map(|v| v.unwrap_or(0.0)).collect()))
 }
 
+pub fn deserialize_option_vec_i32<'de, D>(deserializer: D) -> Result<Option<Vec<i32>>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let opt_vec: Option<Vec<Option<i32>>> = Option::deserialize(deserializer)?;
+    Ok(opt_vec.map(|vec| vec.into_iter().map(|v| v.unwrap_or(0)).collect()))
+}
+
 pub fn deserialize_datetime_to_china_timezone<'de, D>(
     deserializer: D,
 ) -> Result<DateTime<FixedOffset>, D::Error>

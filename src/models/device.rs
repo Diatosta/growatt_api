@@ -1,4 +1,4 @@
-use crate::models;
+use crate::helpers;
 use crate::relative_url::RelativeUrl;
 use crate::session::Session;
 use chrono::{DateTime, FixedOffset};
@@ -41,7 +41,7 @@ pub struct Device {
     pub device_model: String,
     #[serde(
         alias = "deviceType",
-        deserialize_with = "models::utils::deserialize_number_from_string"
+        deserialize_with = "helpers::serde_helper::deserialize_number_from_string"
     )]
     pub device_type: i32,
     #[serde(alias = "deviceTypeName")]
@@ -54,7 +54,7 @@ pub struct Device {
     pub energy_total: String,
     #[serde(
         alias = "lastUpdateTime",
-        deserialize_with = "models::utils::deserialize_datetime_to_local_timezone"
+        deserialize_with = "helpers::serde_helper::deserialize_datetime_to_local_timezone"
     )]
     pub last_update_time: DateTime<FixedOffset>,
     pub location: String,
@@ -70,7 +70,7 @@ pub struct Device {
     pub status: String,
     #[serde(
         alias = "timeServer",
-        deserialize_with = "models::utils::deserialize_datetime_to_china_timezone"
+        deserialize_with = "helpers::serde_helper::deserialize_datetime_to_china_timezone"
     )]
     pub time_server: DateTime<FixedOffset>,
     #[serde(alias = "timezone")]
@@ -137,7 +137,7 @@ pub struct DataLoggerDevice {
     pub plant_name: String,
     #[serde(
         alias = "simSignal",
-        deserialize_with = "models::utils::deserialize_number_from_string"
+        deserialize_with = "helpers::serde_helper::deserialize_number_from_string"
     )]
     pub sim_signal: i32,
     #[serde(alias = "sn")]
