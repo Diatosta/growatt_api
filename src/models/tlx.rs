@@ -3,7 +3,7 @@ use crate::relative_url::RelativeUrl;
 use crate::session::Session;
 use chrono::NaiveDate;
 use reqwest::StatusCode;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 pub struct Tlx {}
@@ -14,7 +14,7 @@ struct TlxTotalDataRoot {
     pub obj: TlxTotalData,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TlxTotalData {
     #[serde(alias = "edischargeToday")]
     pub energy_discharge_today: String,
@@ -59,13 +59,13 @@ struct TlxBatteryChartDataRoot {
     pub obj: TlxBatteryChartData,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 struct TlxBatteryChartDataSocChart {
     #[serde(alias = "bdc1Soc")]
     pub bdc1_soc: Vec<i32>,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TlxBatteryChartData {
     pub date: NaiveDate,
     #[serde(alias = "bcdStatus")]
@@ -82,7 +82,7 @@ struct TlxEnergyDayChartDataRoot {
     pub obj: TlxEnergyDayChartData,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TlxEnergyDayChartDataCharts {
     #[serde(alias = "bdc1ChargePower", with = "serde_arrays")]
     pub battery_charging_power: [Option<f32>; 288],
@@ -107,7 +107,7 @@ pub struct TlxEnergyDayChartDataCharts {
     pub sys_out: [Option<f32>; 288],
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TlxEnergyDayChartData {
     pub charts: TlxEnergyDayChartDataCharts,
     #[serde(
@@ -148,7 +148,7 @@ struct TlxEnergyMonthChartDataRoot {
     pub obj: TlxEnergyMonthChartData,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TlxEnergyMonthChartDataCharts {
     #[serde(alias = "eCharge")]
     pub battery_charging_power: Vec<Option<f32>>,
@@ -173,7 +173,7 @@ pub struct TlxEnergyMonthChartDataCharts {
     pub sys_out: Vec<Option<f32>>,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TlxEnergyMonthChartData {
     pub charts: TlxEnergyMonthChartDataCharts,
     #[serde(
@@ -214,7 +214,7 @@ struct TlxEnergyYearChartDataRoot {
     pub obj: TlxEnergyYearChartData,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TlxEnergyYearChartDataCharts {
     #[serde(alias = "eCharge", with = "serde_arrays")]
     pub battery_charging_power: [Option<f32>; 12],
@@ -239,7 +239,7 @@ pub struct TlxEnergyYearChartDataCharts {
     pub sys_out: [Option<f32>; 12],
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TlxEnergyYearChartData {
     pub charts: TlxEnergyYearChartDataCharts,
     #[serde(
@@ -280,7 +280,7 @@ struct TlxEnergyTotalChartDataRoot {
     pub obj: TlxEnergyTotalChartData,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TlxEnergyTotalChartDataCharts {
     #[serde(alias = "eCharge")]
     pub battery_charging_power: Vec<Option<f32>>,
@@ -305,7 +305,7 @@ pub struct TlxEnergyTotalChartDataCharts {
     pub sys_out: Vec<Option<f32>>,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TlxEnergyTotalChartData {
     pub charts: TlxEnergyTotalChartDataCharts,
     #[serde(
