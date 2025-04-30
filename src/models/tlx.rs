@@ -124,7 +124,7 @@ pub struct TlxEnergyDayChartData {
         alias = "eChargeToday1",
         deserialize_with = "helpers::serde_helper::deserialize_number_from_string"
     )]
-    pub energy_produced_consumed1: f32,
+    pub energy_produced_consumed: f32,
     #[serde(
         alias = "elocalLoad",
         deserialize_with = "helpers::serde_helper::deserialize_number_from_string"
